@@ -1,6 +1,6 @@
 grammar script;
 
-FUNCTION : 'function' ;
+FUNCTION : 'fn' ;
 ON : 'on' ;
 EVENT : 'event' ;
 
@@ -40,6 +40,7 @@ FALSE : 'false';
 fragment DIGIT : [0-9] ;
 INT : DIGIT+ ;
 FLOAT : DIGIT DOT DIGIT ;
+STRING: '"' .* '"' ;
 ID: [a-zA-Z_][a-zA-Z_0-9]*;
 WS: [ \t\n\r\f]+ -> skip ;
 
@@ -70,18 +71,23 @@ typeExpr: VOID
     | ID
     ;
 
-expr: NOT expr
-    | expr (AND|OR) expr
-    | expr (TIMES|DIVIDE) expr
-    | expr (PLUS|LESS) expr
-    | expr (EQ | NE) expr
-    | expr (LT | LE | GE | GT) expr
-    | LPAREN expr RPAREN
-    | call
-    | ID
+literal :
     | INT
     | FLOAT
     | (TRUE | FALSE)
+    | STRING
+    ;
+
+expr: NOT right=expr
+    | left=expr (AND|OR) right=expr
+    | left=expr (TIMES|DIVIDE) right=expr
+    | left=expr (PLUS|LESS) right=expr
+    | left=expr (EQ | NE) right=expr
+    | left=expr (LT | LE | GE | GT) right=expr
+    | '(' right=expr ')'
+    | call
+    | ID
+    | literal
     ;
 
 call : ID LPAREN expr (COMMA expr)* RPAREN ;
