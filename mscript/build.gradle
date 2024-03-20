@@ -1,0 +1,23 @@
+plugins {
+    id 'java-library'
+    id 'io.freefair.lombok' version '8.6'
+    id 'antlr'
+}
+
+configurations {
+
+}
+
+dependencies {
+    implementation 'org.jetbrains:annotations:24.1.0'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    antlr "org.antlr:antlr4:4.13.1"
+}
+
+test {
+    useJUnitPlatform()
+}

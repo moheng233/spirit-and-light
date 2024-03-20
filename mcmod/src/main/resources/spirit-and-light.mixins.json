@@ -1,9 +1,9 @@
 {
 	"required": true,
-	"package": "site.moheng.mixin.client",
+  "package": "site.moheng.spirit_and_light.mixin",
 	"compatibilityLevel": "JAVA_17",
-	"client": [
-		"ExampleClientMixin"
+	"mixins": [
+		"ExampleMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
