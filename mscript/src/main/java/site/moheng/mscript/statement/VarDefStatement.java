@@ -1,18 +1,22 @@
 package site.moheng.mscript.statement;
 
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Value;
+import org.jetbrains.annotations.NotNull;
 import site.moheng.mscript.antlr.MScriptParser;
 import site.moheng.mscript.expression.IExpression;
 import site.moheng.mscript.literal.IdentityLiteral;
 import site.moheng.mscript.typeStatement.ITypeStatement;
 
+
 @Value
-@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor(staticName = "of")
-public record VarDefStatement(ITypeStatement type, IdentityLiteral identity, IExpression value) implements IStatement {
-    public static VarDefStatement from(MScriptParser.VarDefStatContext context) {
+public class VarDefStatement implements IStatement {
+    ITypeStatement type;
+    IdentityLiteral identity;
+    IExpression value;
+
+    public static VarDefStatement from(@NotNull MScriptParser.VarDefStatContext context) {
         return VarDefStatement.of(ITypeStatement.from(context.type), IdentityLiteral.from(context.name), IExpression.from(context.value));
     }
 }

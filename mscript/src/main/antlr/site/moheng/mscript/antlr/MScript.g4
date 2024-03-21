@@ -47,12 +47,12 @@ WS: [ \t\n\r\f]+ -> skip ;
 program : (varDefStat | closureStat)* EOF ;
 
 varDefStat : count=CONST? (type=typeExpr|VAR) name=ID ASSIGN value=expr SEMI ;
-closureStat : returnValue=typeExpr name=ID args=argDef bodyStat ;
+closureStat : returnValue=typeExpr name=ID args=argDef body=bodyStat ;
 returnStat : RETURN value=expr SEMI ;
 exprStat : expr SEMI;
-bodyStat: '{' stat* '}' ;
+bodyStat: '{' stats+=stat* '}' ;
 
-closureExpr: returnValue=typeExpr args=argDef '=>' bodyStat ;
+closureExpr: returnValue=typeExpr args=argDef '=>' body=bodyStat ;
 
 stat
     : varDefStat
