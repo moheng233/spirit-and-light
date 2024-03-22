@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 import site.moheng.mscript.antlr.MScriptParser;
+import site.moheng.mscript.runtime.IRuntimeScope;
 
 public interface IStatement {
     static @Nullable @Unmodifiable IStatement from(@NotNull MScriptParser.StatContext context) {
@@ -22,4 +23,6 @@ public interface IStatement {
 
         return null;
     }
+
+    void exec(IRuntimeScope scope);
 }

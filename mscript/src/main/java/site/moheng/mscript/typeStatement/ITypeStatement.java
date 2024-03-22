@@ -4,7 +4,13 @@ import site.moheng.mscript.antlr.MScriptParser;
 
 public interface ITypeStatement {
     static ITypeStatement from(MScriptParser.TypeExprContext context) {
-        // TODO:
+        if (context.typeLiteral() != null) {
+            if (context.typeLiteral().ID() != null) {
+                return new ObjectTypeLiteral();
+            }
+            return TypeLiteral.create(context.typeLiteral());
+        }
+
         return null;
     }
 }

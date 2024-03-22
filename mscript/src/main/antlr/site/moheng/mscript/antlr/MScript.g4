@@ -1,11 +1,14 @@
 grammar MScript;
+options {
+    contextSuperClass=org.antlr.v4.runtime.RuleContextWithAltNum;
+}
 
 @header {
 package site.moheng.mscript.antlr;
 }
 
-AND : 'and' ;
-OR : 'or' ;
+AND : '&&' ;
+OR : '||' ;
 ASSIGN : '=' ;
 DOT : '.' ;
 PLUS : '+' ;
@@ -34,6 +37,7 @@ VOID : 'void';
 TYPE_INT : 'int' ;
 TYPE_BOOL : 'bool' ;
 TYPE_FLOAT : 'float' ;
+TYPE_STRING : 'string' ;
 
 TRUE : 'true';
 FALSE : 'false';
@@ -77,13 +81,13 @@ typeLiteral
     | TYPE_INT
     | TYPE_FLOAT
     | TYPE_BOOL
+    | TYPE_STRING
     | typeClosureLiteral
     | ID
     ;
 
 typeExpr
-    : typeExpr DOT typeLiteral
-    | typeExpr '<' args+=typeExpr (COMMA args+=typeExpr )* '>'
+    : typeExpr '<' args+=typeExpr (COMMA args+=typeExpr )* '>'
     | typeLiteral
     ;
 
@@ -95,14 +99,14 @@ literal
     | value=STRING
     ;
 
-expr: NOT expr
-    | '(' expr ')'
-    | expr (AND | OR) expr
-    | expr (TIMES | DIVIDE) expr
-    | expr (PLUS | LESS) expr
-    | expr (EQ | NE) expr
-    | expr (LT | LE | GE | GT) expr
-    | ID ASSIGN expr
+expr: oper=NOT right=expr
+    | '(' right=expr ')'
+    | left=expr (oper=AND | oper=OR) right=expr
+    | left=expr (oper=TIMES | oper=DIVIDE) right=expr
+    | left=expr (oper=PLUS | oper=LESS) right=expr
+    | left=expr (oper=EQ | oper=NE) right=expr
+    | left=expr (oper=LT | oper=LE | oper=GE | oper=GT) right=expr
+    | ID oper=ASSIGN right=expr
     | closureExpr
     | call
     | literal

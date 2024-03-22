@@ -7,6 +7,10 @@ import site.moheng.mscript.antlr.MScriptParser;
 
 public interface ILiteral {
 
+    static ILiteral from(@NotNull MScriptParser.ExprContext context) {
+        return from(context.literal().value);
+    }
+
     static ILiteral from(@NotNull TerminalNode node) {
         return from(node.getSymbol());
     }
