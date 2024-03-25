@@ -8,6 +8,8 @@ import site.moheng.mscript.literal.IdentityLiteral;
 import site.moheng.mscript.typeStatement.ITypeStatement;
 import site.moheng.mscript.util.ClosureArgs;
 
+import java.util.List;
+
 @Value
 @AllArgsConstructor(staticName = "of")
 public class ClosureStatement implements IStatement {
@@ -16,7 +18,15 @@ public class ClosureStatement implements IStatement {
     ClosureArgs args;
     BodyStatement body;
 
-    public static ClosureStatement from(@NotNull MScriptParser.ClosureStatContext context) {
+    public static ClosureStatement from(@NotNull MScriptParser.ClosureStatContext context) throws RuntimeException {
         return ClosureStatement.of(ITypeStatement.from(context.returnValue), IdentityLiteral.from(context.name), ClosureArgs.from(context.args), BodyStatement.from(context.body));
+    }
+
+    public static List<ClosureStatement> fromList(@NotNull List<MScriptParser.ClosureStatContext> contexts) {
+        try {
+            return contexts.stream().map(ClosureStatement::from).toList();
+        } catch (Exception e) {
+            throw e;
+        }
     }
 }

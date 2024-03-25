@@ -5,7 +5,7 @@ import lombok.Singular;
 import lombok.val;
 import site.moheng.mscript.antlr.MScriptParser;
 import site.moheng.mscript.statement.ClosureStatement;
-import site.moheng.mscript.statement.VarDefStatement;
+import site.moheng.mscript.statement.VariableDefineStatement;
 
 import java.util.List;
 
@@ -13,15 +13,15 @@ import java.util.List;
 public class MScriptProgram {
 
     @Singular
-    public List<VarDefStatement> varDefStatements;
+    public List<VariableDefineStatement> variableDefStatements;
     @Singular
     public List<ClosureStatement> closureStatements;
 
-    public static MScriptProgram from(MScriptParser.ProgramContext context) {
+    public static MScriptProgram from(MScriptParser.ProgramContext context) throws Exception {
         val builder = new MScriptProgramBuilder();
 
         for (val varDef : context.varDefStat()) {
-            builder.varDefStatement(VarDefStatement.from(varDef));
+            builder.variableDefStatement(VariableDefineStatement.from(varDef));
         }
 
         for (val closure : context.closureStat()) {

@@ -16,12 +16,11 @@ public interface IExpression {
                 return LogicalExpression.from(context);
             }
         }
+        if (context.variable() != null) {
+            return VariableRefExpression.from(context.variable());
+        }
         if (context.literal() != null) {
-            if (context.literal().value.getType() == MScriptParser.ID) {
-                return VariableRefExpression.from(context);
-            } else {
-                return LiteralExpression.from(context);
-            }
+            return LiteralExpression.from(context);
         }
 
         return null;

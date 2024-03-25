@@ -12,7 +12,7 @@ import java.util.List;
 public class BodyStatement implements IStatement {
     List<IStatement> statements;
 
-    public static BodyStatement from(@NotNull MScriptParser.BodyStatContext context) {
+    public static BodyStatement from(@NotNull MScriptParser.BodyStatContext context) throws RuntimeException {
         return BodyStatement.of(context.stats.stream().map(IStatement::from).toList());
     }
 }
