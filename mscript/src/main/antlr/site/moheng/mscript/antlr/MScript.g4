@@ -1,6 +1,5 @@
 grammar MScript;
 options {
-    contextSuperClass=org.antlr.v4.runtime.RuleContextWithAltNum;
 }
 
 @header {
@@ -32,6 +31,8 @@ RCURLY : '}' ;
 VAR : 'var' ;
 CONST : 'const' ;
 RETURN : 'return' ;
+IF : 'if' ;
+FUNCTION: 'function' | 'fun' ;
 INTERFACE : 'interface' ;
 STRUCT: 'struct' ;
 EXTENDS : 'extends' ;
@@ -47,33 +48,33 @@ FALSE : 'false' ;
 fragment DIGIT : [0-9] ;
 INT : DIGIT+ ;
 FLOAT : DIGIT DOT DIGIT ;
-STRING: '"' (.)*? '"' ;
+STRING: '"' .*? '"' ;
 ID: [a-zA-Z_][a-zA-Z_0-9]*;
+
+LINE_COMMENT : '//' .*? '\r'? '\n' -> skip ;
+COMMENT : '/*' .*? '*/' -> skip ;
 WS: [ \t\n\r\f]+ -> skip ;
 
-program : (varDefStat | closureStat | interfaceDefStat | structDefStat)* EOF ;
+program
+    : (vars+=varDefStat | closures+=closureStat | interfaces+=interfaceDefStat | structs+=structDefStat)* EOF ;
 
 interfaceClosureStat : returnValue=typeExpr name=ID args=argDef SEMI ;
 interfaceDefStat : INTERFACE name=ID (EXTENDS extends+=ID ( ',' extends+=ID)*)? '{' vars+=interfaceClosureStat* '}';
 
 structDefStat : STRUCT name=ID (EXTENDS extends+=ID ( ',' extends+=ID)*)? '{' (vars+=varDefStat | closures+= closureStat)* '}' ;
 
-variable: ID ('.' ID)*;
+variable: id+=ID ('.' id+=ID)*;
 varDefStat : count=CONST? (type=typeExpr|VAR) name=ID ASSIGN value=expr SEMI ;
-closureStat : returnValue=typeExpr name=ID args=argDef body=bodyStat ;
-assignStat : name=variable ASSIGN value=expr SEMI ;
-returnStat : RETURN value=expr SEMI ;
+closureStat : FUNCTION name=ID args=argDef ( ':' returnValue=typeExpr )? body=bodyStat ;
 bodyStat: '{' stats+=stat* '}' ;
-exprStat : expr SEMI;
-
-closureExpr: returnValue=typeExpr args=argDef '=>' body=bodyStat ;
 
 stat
-    : varDefStat
-    | assignStat
-    | returnStat
-    | exprStat
-    | bodyStat
+    : varDefStat #VariableDefineStatement
+    | name=variable ASSIGN value=expr SEMI #VariableAssignStatement
+    | IF '(' conditions=expr ')' bodyStat #IFStatement
+    | RETURN value=expr SEMI #ReturnStatement
+    | value=expr SEMI #ExpressionStatement
+    | bodyStat #BodyStatement
     ;
 
 
@@ -97,28 +98,24 @@ typeLiteral
     ;
 
 typeExpr
-    : typeExpr '<' args+=typeExpr (COMMA args+=typeExpr )* '>'
-    | typeLiteral
+    : typeLiteral #TypeLiteralExpression
+    | typeExpr '<' args+=typeExpr (COMMA args+=typeExpr )* '>' #TypeGenericsExpression
     ;
 
 literal
-    : value=INT
-    | value=FLOAT
-    | value=(TRUE | FALSE)
-    | value=STRING
+    : value=INT #IntLiteral
+    | value=FLOAT #FloatLiteral
+    | value=(TRUE | FALSE) #BooleanLiteral
+    | value=STRING #StringLiteral
     ;
 
-expr: oper=NOT right=expr
-    | '(' right=expr ')'
-    | left=expr (oper=AND | oper=OR) right=expr
-    | left=expr (oper=TIMES | oper=DIVIDE) right=expr
-    | left=expr (oper=PLUS | oper=LESS) right=expr
-    | left=expr (oper=EQ | oper=NE) right=expr
-    | left=expr (oper=LT | oper=LE | oper=GE | oper=GT) right=expr
-    | closureExpr
-    | call
-    | literal
-    | variable
+expr: left=expr '(' args+=expr (COMMA args+=expr)* ')' #CallExpression
+    | oper=NOT right=expr #NotExpression
+    | left=expr (oper=AND | oper=OR) right=expr #CombinatorialLogicExpression
+    | left=expr (oper=EQ | oper=NE | oper=LT | oper=LE | oper=GE | oper=GT) right=expr #ComparativeLogicExpression
+    | left=expr (oper=TIMES | oper=DIVIDE | oper=PLUS | oper=LESS) right=expr #MathsExpression
+    | returnValue=typeExpr args=argDef '=>' body=bodyStat #ClosureExpression
+    | variable #VariableExpression
+    | literal #LiteralExpression
+    | '(' right=expr ')' #ParenExpression
     ;
-
-call : ID '(' expr (COMMA expr)* ')' ;

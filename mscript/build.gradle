@@ -8,6 +8,10 @@ configurations {
 
 }
 
+generateGrammarSource {
+    arguments += ["-visitor", "-long-messages"]
+}
+
 dependencies {
     implementation 'org.jetbrains:annotations:24.1.0'
 
